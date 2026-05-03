@@ -726,7 +726,7 @@ function showCorrectPop(pct){
   const isLast=qIdx>=9;
   const ov=document.createElement('div');
   ov.id='correctPopOv';
-  ov.style.cssText='position:fixed;inset:0;z-index:900;display:flex;align-items:center;justify-content:center;background:rgba(0,20,60,.55);backdrop-filter:blur(10px);opacity:0;transition:opacity .25s;padding:20px';
+  ov.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:900;display:flex;align-items:center;justify-content:center;background:rgba(0,20,60,.55);backdrop-filter:blur(10px);opacity:0;transition:opacity .25s;padding:20px';
   ov.innerHTML=`<div id="correctPopBox" style="background:#fff;border-radius:24px;padding:36px 28px 28px;max-width:320px;width:100%;text-align:center;transform:scale(.65) translateY(80px);transition:transform .45s cubic-bezier(.34,1.56,.64,1);box-shadow:0 24px 80px rgba(0,63,138,.3)">
     <div style="font-size:3.5rem;animation:popBounce .5s ease-out">🎉</div>
     <div style="font-size:.9rem;font-weight:700;color:var(--green);margin:8px 0">תשובה נכונה!</div>
@@ -738,10 +738,10 @@ function showCorrectPop(pct){
     <button onclick="advance()" style="background:linear-gradient(135deg,var(--blue),var(--blue-mid));color:#fff;border:none;border-radius:12px;padding:13px;font-family:Rubik,sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;width:100%">${isLast?'לראות תוצאות ←':'לשאלה הבאה ←'}</button>
   </div>`;
   document.body.appendChild(ov);
-  requestAnimationFrame(()=>{ov.style.opacity='1';document.getElementById('correctPopBox').style.transform='scale(1) translateY(0)';});
+  requestAnimationFrame(()=>{ov.style.opacity='1';ov.style.pointerEvents='auto';document.getElementById('correctPopBox').style.transform='scale(1) translateY(0)';});
   ov.addEventListener('click',e=>{if(e.target===ov)advance();});
 }
-function closeCorrectPop(){const ov=document.getElementById('correctPopOv');if(!ov)return;ov.style.opacity='0';setTimeout(()=>ov.remove(),280);}
+function closeCorrectPop(){const ov=document.getElementById('correctPopOv');if(!ov)return;ov.style.opacity='0';ov.style.pointerEvents='none';setTimeout(()=>ov.remove(),280);}
 
 // ── SUM ────────────────────────────────────────────────────────
 function showSum(){
@@ -862,7 +862,7 @@ function showBonusPop(count){
   const isFirst=count===1;
   const ov=document.createElement('div');
   ov.id='upsellPopOv';
-  ov.style.cssText='position:fixed;inset:0;z-index:900;display:flex;align-items:center;justify-content:center;background:rgba(0,20,60,.55);backdrop-filter:blur(8px);opacity:0;transition:opacity .25s;padding:20px';
+  ov.style.cssText='position:fixed;inset:0;z-index:900;display:flex;align-items:center;justify-content:center;background:rgba(0,20,60,.55);backdrop-filter:blur(8px);opacity:0;pointer-events:none;transition:opacity .25s;padding:20px';
   ov.innerHTML=`<div id="upsellBox" style="background:#fff;border-radius:24px;padding:28px 24px;max-width:310px;width:100%;text-align:center;transform:scale(.7) translateY(60px);transition:transform .4s cubic-bezier(.34,1.56,.64,1);box-shadow:0 24px 80px rgba(0,63,138,.3)">
     <div style="font-size:2.5rem;margin-bottom:4px">${isFirst?'🎉':'🛒'}</div>
     <div style="font-size:.9rem;font-weight:700;color:var(--blue);margin-bottom:8px">${isFirst?'בחרת מוצר ראשון!':'הוספת מוצר '+count+'!'}</div>
@@ -871,11 +871,11 @@ function showBonusPop(count){
       <div style="font-size:.78rem;color:rgba(255,255,255,.8);font-weight:600">הנחה כוללת על העגלה</div>
     </div>
     ${td<14?`<div style="background:#EBF9F4;border:1.5px solid #86EFAC;border-radius:12px;padding:10px 14px;font-size:.82rem;font-weight:700;color:#15803D;margin-bottom:16px">🔥 הוסף עוד מוצר וקבל <strong>${nextTd}%</strong> הנחה! (עד 14% מקסימום)</div>`:`<div style="background:#FFF9E6;border:1.5px solid #FFB800;border-radius:12px;padding:10px 14px;font-size:.82rem;font-weight:700;color:#92400E;margin-bottom:16px">🏆 הגעת להנחה המקסימלית — 14%!</div>`}
-    <button onclick="document.getElementById('upsellPopOv').remove()" style="background:linear-gradient(135deg,var(--blue),var(--blue-mid));color:#fff;border:none;border-radius:12px;padding:12px;font-family:Rubik,sans-serif;font-size:.92rem;font-weight:700;cursor:pointer;width:100%">המשך לקנות ←</button>
+    <button onclick="var o=document.getElementById('upsellPopOv');if(o){o.style.pointerEvents='none';o.style.opacity='0';setTimeout(function(){o.remove();},280);}" style="background:linear-gradient(135deg,var(--blue),var(--blue-mid));color:#fff;border:none;border-radius:12px;padding:12px;font-family:Rubik,sans-serif;font-size:.92rem;font-weight:700;cursor:pointer;width:100%">המשך לקנות ←</button>
   </div>`;
   document.body.appendChild(ov);
   spawnCoins();playPop();
-  requestAnimationFrame(()=>{ov.style.opacity='1';document.getElementById('upsellBox').style.transform='scale(1) translateY(0)';});
+  requestAnimationFrame(()=>{ov.style.opacity='1';ov.style.pointerEvents='auto';document.getElementById('upsellBox').style.transform='scale(1) translateY(0)';});
   ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
 }
 
@@ -978,7 +978,7 @@ function showFreeShipPop(){
   const old=document.getElementById('freeShipPopOv');if(old)old.remove();
   const ov=document.createElement('div');
   ov.id='freeShipPopOv';
-  ov.style.cssText='position:fixed;inset:0;z-index:950;display:flex;align-items:center;justify-content:center;background:rgba(0,20,60,.6);backdrop-filter:blur(10px);opacity:0;transition:opacity .25s;padding:20px';
+  ov.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:950;display:flex;align-items:center;justify-content:center;background:rgba(0,20,60,.6);backdrop-filter:blur(10px);opacity:0;transition:opacity .25s;padding:20px';
   ov.innerHTML=`<div id="freeShipBox" style="background:#fff;border-radius:28px;padding:36px 28px;max-width:320px;width:100%;text-align:center;transform:scale(.65) translateY(80px);transition:transform .45s cubic-bezier(.34,1.56,.64,1);box-shadow:0 28px 80px rgba(0,63,138,.3)">
     <div style="font-size:4rem;margin-bottom:8px">🚚</div>
     <div style="font-size:1.6rem;font-weight:900;color:var(--blue-dark);margin-bottom:8px">משלוח חינם!</div>
@@ -992,6 +992,7 @@ function showFreeShipPop(){
   document.body.appendChild(ov);
   requestAnimationFrame(()=>{
     ov.style.opacity='1';
+    ov.style.pointerEvents='auto';
     document.getElementById('freeShipBox').style.transform='scale(1) translateY(0)';
   });
 }
