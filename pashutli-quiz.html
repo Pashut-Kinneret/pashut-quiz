@@ -163,7 +163,7 @@ main{max-width:600px;margin:0 auto;padding:20px 14px 60px;position:relative;z-in
 .cart-upsell-right .bonus{font-size:.78rem;font-weight:700;color:var(--teal);margin-bottom:2px}
 .cart-upsell-right .total{font-size:1rem;font-weight:800;color:var(--blue-dark)}
 .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px;margin:14px 0}
-.pcard{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:transform .22s,box-shadow .22s;box-shadow:var(--shadow)}
+.pcard{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:transform .22s,box-shadow .22s;box-shadow:var(--shadow);cursor:pointer}
 .pcard:hover{transform:translateY(-3px);box-shadow:var(--shadow-md)}
 .pcard.rec{border-color:var(--green)}
 .pimg{height:175px;overflow:hidden;position:relative;background:#EBF3FF}
@@ -781,7 +781,9 @@ function goProducts(){
   // Event delegation — מאזין אחד על כל ה-grid, עמיד לכל שינוי DOM
   const grid=document.getElementById('prodGrid');
   grid.removeEventListener('click', _cartDelegate);
+  grid.removeEventListener('touchend', _cartDelegateTouchEnd);
   grid.addEventListener('click', _cartDelegate);
+  grid.addEventListener('touchend', _cartDelegateTouchEnd, {passive:false});
 }
 
 function _cartDelegate(e){
@@ -789,6 +791,14 @@ function _cartDelegate(e){
   if(btn){
     e.preventDefault();
     e.stopPropagation();
+    const pid=btn.getAttribute('data-pid');
+    if(pid) toggleCart(pid);
+  }
+}
+function _cartDelegateTouchEnd(e){
+  const btn=e.target.closest('.bcart');
+  if(btn){
+    e.preventDefault();
     const pid=btn.getAttribute('data-pid');
     if(pid) toggleCart(pid);
   }
@@ -852,6 +862,8 @@ function renderProds(){
     cartBtn.setAttribute('data-pid', p.id);
     cartBtn.textContent=cart.has(p.id)?'✓ נבחר':'+ לעגלה';
     if(cart.has(p.id)) cartBtn.style.background='var(--green)';
+    cartBtn.style.cssText+='cursor:pointer;-webkit-tap-highlight-color:rgba(0,0,0,0.1);touch-action:manipulation;';
+    cartBtn.onclick=function(e){e.stopPropagation();toggleCart(p.id);};
     actions.appendChild(cartBtn);
 
     const siteLink=document.createElement('a');
@@ -889,8 +901,14 @@ function toggleCart(pid){
       if(savingEl){const s=prod.price-f;savingEl.textContent=s>0?`חיסכון של ₪${s}`:'';}
     }
   });
-  if(cart.size>0){document.getElementById('cartSumWrap').style.display='block';renderCartSum();}
-  else{document.getElementById('cartSumWrap').style.display='none';}
+  if(cart.size>0){
+    const csw=document.getElementById('cartSumWrap');
+    csw.style.display='block';
+    renderCartSum();
+    setTimeout(()=>csw.scrollIntoView({behavior:'smooth',block:'start'}),300);
+  } else {
+    document.getElementById('cartSumWrap').style.display='none';
+  }
 }
 
 function showBonusPop(count){
