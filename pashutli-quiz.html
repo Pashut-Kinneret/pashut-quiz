@@ -749,10 +749,12 @@ function showSum(){
     victoryEl.style.display='block';normalEl.style.display='none';
     document.getElementById('sumTitle').style.display='none';
     const vp=document.getElementById('victoryPct');if(vp)vp.textContent=correct+'%';
-    burst();playFinale();
+    burst();
+    setTimeout(()=>playFinale(), 400);
   } else {
     victoryEl.style.display='none';normalEl.style.display='block';
     document.getElementById('sumTitle').style.display='flex';
+    setTimeout(()=>playWin(), 300);
   }
   // פידבק לפי רמת הצלחה
   const msgEl=document.getElementById('victoryMsg');
@@ -776,6 +778,20 @@ function goProducts(){
   cart.clear();cartBonus=0;freeShip=false;
   document.getElementById('cartSumWrap').style.display='none';
   renderProds();
+  // Event delegation — מאזין אחד על כל ה-grid, עמיד לכל שינוי DOM
+  const grid=document.getElementById('prodGrid');
+  grid.removeEventListener('click', _cartDelegate);
+  grid.addEventListener('click', _cartDelegate);
+}
+
+function _cartDelegate(e){
+  const btn=e.target.closest('.bcart');
+  if(btn){
+    e.preventDefault();
+    e.stopPropagation();
+    const pid=btn.getAttribute('data-pid');
+    if(pid) toggleCart(pid);
+  }
 }
 
 function prodPlaceholder(pid){
@@ -836,7 +852,6 @@ function renderProds(){
     cartBtn.setAttribute('data-pid', p.id);
     cartBtn.textContent=cart.has(p.id)?'✓ נבחר':'+ לעגלה';
     if(cart.has(p.id)) cartBtn.style.background='var(--green)';
-    cartBtn.addEventListener('click', ()=>toggleCart(p.id));
     actions.appendChild(cartBtn);
 
     const siteLink=document.createElement('a');
