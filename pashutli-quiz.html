@@ -793,98 +793,48 @@ function prodPlaceholder(pid){
 }
 
 function renderProds(){
-  const recIds=answered.filter(a=>a.correct).map(a=>a.product);
-  const g=document.getElementById('prodGrid');
-  g.innerHTML='';
   const td=Math.min(correct+cartBonus,14);
+  const recIds=answered.filter(a=>a.correct).map(a=>a.product);
+  let out='';
   PRODS.forEach(p=>{
     const isRec=recIds.includes(p.id);
     const final=Math.round(p.price*(1-td/100));
     const saving=p.price-final;
-    const card=document.createElement('div');
-    card.className='pcard'+(isRec?' rec':'');
-
-    // image
-    const imgWrap=document.createElement('div');
-    imgWrap.className='pimg';
-    if(imgSrc[p.id]){
-      const im=document.createElement('img');
-      im.src=imgSrc[p.id]; im.alt=p.name;
-      im.onerror=()=>{imgWrap.innerHTML=prodPlaceholder(p.id);};
-      imgWrap.appendChild(im);
-    } else {
-      imgWrap.innerHTML=prodPlaceholder(p.id);
-    }
-    const tagEl=document.createElement('div');
-    tagEl.className='ptag'; tagEl.textContent=p.tag;
-    imgWrap.appendChild(tagEl);
-    if(isRec){const r=document.createElement('div');r.className='prec';r.textContent='⭐ מומלץ';imgWrap.appendChild(r);}
-    card.appendChild(imgWrap);
-
-    // body
-    const body=document.createElement('div');
-    body.className='pbody';
-    body.innerHTML=`
-      <div class="pname">${p.name}</div>
-      <div class="pdesc">${p.desc}</div>
-      <div class="ppricing">
-        <span class="pnew" data-pid="${p.id}">₪${final}</span>
-        ${td>0?`<span class="pold">₪${p.price}</span><span class="psave">-${td}%</span>`:''}
+    const inCart=cart.has(p.id);
+    const img=imgSrc[p.id]
+      ?`<img src="${imgSrc[p.id]}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover">`
+      :prodPlaceholder(p.id);
+    out+=`<div class="pcard${isRec?' rec':''}">
+      <div class="pimg">${img}<div class="ptag">${p.tag}</div>${isRec?'<div class="prec">⭐ מומלץ</div>':''}</div>
+      <div class="pbody">
+        <div class="pname">${p.name}</div>
+        <div class="pdesc">${p.desc}</div>
+        <div class="ppricing">
+          <span class="pnew" data-pid="${p.id}">₪${final}</span>
+          ${td>0?`<span class="pold">₪${p.price}</span><span class="psave">-${td}%</span>`:''}
+        </div>
+        <div class="psaving" style="font-size:.68rem;color:var(--green);font-weight:700;margin-bottom:8px">${saving>0?`חיסכון של ₪${saving}`:''}</div>
+        <div class="pactions">
+          <button class="bcart${inCart?' incart':''}" style="${inCart?'background:var(--green)':''}" onclick="toggleCart('${p.id}')">${inCart?'✓ נבחר':'+ לעגלה'}</button>
+          <a href="${p.url}" target="_blank" class="bsite">לפרטים באתר ↗</a>
+        </div>
       </div>
-      <div class="psaving" style="font-size:.68rem;color:var(--green);font-weight:700;margin-bottom:8px">${saving>0?`חיסכון של ₪${saving}`:''}</div>`;
-
-    // כפתורים — נוצרים ישירות, לא דרך innerHTML
-    const actions=document.createElement('div');
-    actions.className='pactions';
-
-    const cartBtn=document.createElement('button');
-    cartBtn.className='bcart';
-    cartBtn.textContent=cart.has(p.id)?'✓ נבחר':'+ לעגלה';
-    if(cart.has(p.id)) cartBtn.style.background='var(--green)';
-    const _pid=p.id;
-    cartBtn.onclick=function(){toggleCart(_pid);};
-    actions.appendChild(cartBtn);
-
-    const siteLink=document.createElement('a');
-    siteLink.href=p.url; siteLink.target='_blank';
-    siteLink.className='bsite'; siteLink.textContent='לפרטים באתר ↗';
-    actions.appendChild(siteLink);
-
-    body.appendChild(actions);
-    card.appendChild(body);
-    g.appendChild(card);
+    </div>`;
   });
+  document.getElementById('prodGrid').innerHTML=out;
 }
 
 function toggleCart(pid){
   const wasIn=cart.has(pid);
-  if(wasIn){cart.delete(pid);}else{cart.add(pid); showBonusPop(cart.size);}
+  if(wasIn){cart.delete(pid);}else{cart.add(pid);showBonusPop(cart.size);}
   cartBonus=cart.size>1?Math.min(cart.size-1,14):0;
-  const td=Math.min(correct+cartBonus,14);
   document.getElementById('cartBonus').textContent=cartBonus>0?`+${cartBonus}% בונוס עגלה`:'';
-  // עדכן כפתורים ומחירים
-  document.querySelectorAll('.bcart').forEach(btn=>{
-    const p=btn.getAttribute('data-pid');
-    if(cart.has(p)){btn.textContent='✓ נבחר';btn.style.background='var(--green)';}
-    else{btn.textContent='+ לעגלה';btn.style.background='var(--blue)';}
-  });
-  document.querySelectorAll('.pnew').forEach(el=>{
-    const pid=el.getAttribute('data-pid');
-    const prod=PRODS.find(p=>p.id===pid);
-    if(prod){
-      const f=Math.round(prod.price*(1-td/100));
-      el.textContent='₪'+f;
-      const saveEl=el.closest('.pbody')?.querySelector('.psave');
-      if(saveEl&&td>0) saveEl.textContent='-'+td+'%';
-      const savingEl=el.closest('.pbody')?.querySelector('.psaving');
-      if(savingEl){const s=prod.price-f;savingEl.textContent=s>0?`חיסכון של ₪${s}`:'';}
-    }
-  });
+  renderProds();
   if(cart.size>0){
     const csw=document.getElementById('cartSumWrap');
     csw.style.display='block';
     renderCartSum();
-    setTimeout(()=>csw.scrollIntoView({behavior:'smooth',block:'start'}),300);
+    setTimeout(()=>csw.scrollIntoView({behavior:'smooth',block:'nearest'}),200);
   } else {
     document.getElementById('cartSumWrap').style.display='none';
   }
