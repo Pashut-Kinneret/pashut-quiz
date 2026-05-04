@@ -803,39 +803,35 @@ function prodPlaceholder(pid){
 }
 
 function renderProds(){
-  const td=Math.min(correct+cartBonus,14);
-  const recIds=answered.filter(a=>a.correct).map(a=>a.product);
-  const g=document.getElementById('prodGrid');
+  var td=Math.min(correct+cartBonus,14);
+  var recIds=answered.filter(function(a){return a.correct;}).map(function(a){return a.product;});
+  var g=document.getElementById('prodGrid');
   g.innerHTML='';
   PRODS.forEach(function(p){
-    const isRec=recIds.includes(p.id);
-    const final=Math.round(p.price*(1-td/100));
-    const saving=p.price-final;
-    const inCart=cart.has(p.id);
-    const img=imgSrc[p.id]
-      ?'<img src="'+imgSrc[p.id]+'" alt="'+p.name+'" style="width:100%;height:100%;object-fit:cover">'
+    var isRec=recIds.indexOf(p.id)>=0;
+    var final=Math.round(p.price*(1-td/100));
+    var saving=p.price-final;
+    var inCart=cart.has(p.id);
+    var card=document.createElement('div');
+    card.className='pcard'+(isRec?' rec':'');
+    var imgHTML=imgSrc[p.id]
+      ?'<img src="'+imgSrc[p.id]+'" style="width:100%;height:100%;object-fit:cover">'
       :prodPlaceholder(p.id);
-    const div=document.createElement('div');
-    div.className='pcard'+(isRec?' rec':'');
-    div.innerHTML='<div class="pimg">'+img+'<div class="ptag">'+p.tag+'</div>'+(isRec?'<div class="prec">⭐ מומלץ</div>':'')+'</div>'
+    card.innerHTML=''
+      +'<div class="pimg">'+imgHTML+'<div class="ptag">'+p.tag+'</div>'+(isRec?'<div class="prec">⭐</div>':'')+'</div>'
       +'<div class="pbody">'
       +'<div class="pname">'+p.name+'</div>'
       +'<div class="pdesc">'+p.desc+'</div>'
-      +'<div class="ppricing"><span class="pnew" data-pid="'+p.id+'">₪'+final+'</span>'
-      +(td>0?'<span class="pold">₪'+p.price+'</span><span class="psave">-'+td+'%</span>':'')
-      +'</div>'
-      +'<div class="psaving" style="font-size:.68rem;color:var(--green);font-weight:700;margin-bottom:8px">'+(saving>0?'חיסכון של ₪'+saving:'')+'</div>'
-      +'<div class="pactions">'
-      +'<button type="button" class="bcart" data-pid="'+p.id+'" style="'+(inCart?'background:var(--green)':'')+'">'+(inCart?'✓ נבחר':'+ לעגלה')+'</button>'
-      +'<a href="'+p.url+'" target="_blank" class="bsite">לפרטים באתר ↗</a>'
+      +'<div class="ppricing"><span class="pnew">₪'+final+'</span>'+(td>0?'<span class="pold">₪'+p.price+'</span><span class="psave">-'+td+'%</span>':'')+'</div>'
+      +(saving>0?'<div style="font-size:.68rem;color:var(--green);font-weight:700;margin-bottom:8px">חיסכון ₪'+saving+'</div>':'')
+      +'<div class="pactions"><button type="button" class="bcart" id="bcart_'+p.id+'" style="'+(inCart?'background:var(--green)':'')+'">'+( inCart?'✓ נבחר':'+ לעגלה')+'</button>'
+      +'<a href="'+p.url+'" target="_blank" rel="noopener" class="bsite">לפרטים באתר</a>'
       +'</div></div>';
-    var btn=div.querySelector('.bcart');
-    (function(pid){
-      btn.addEventListener('click',function(){toggleCart(pid);});
-    })(p.id);
-    g.appendChild(div);
+    g.appendChild(card);
+    document.getElementById('bcart_'+p.id).onclick=new Function('toggleCart("'+p.id+'")');
   });
 }
+
 
 function toggleCart(pid){
   if(cart.has(pid)){cart.delete(pid);}else{cart.add(pid);showBonusPop(cart.size);}
