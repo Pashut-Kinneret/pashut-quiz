@@ -967,43 +967,51 @@ function sendCartOrder(){
 // ── SHARE ──────────────────────────────────────────────────────
 let sentSet=new Set();
 function buildFriendRows(){
+  const appLink=window.location.href;
+  const msg=encodeURIComponent(`היי! מצאתי חידון בריאות מגניב של פשוט כנרת — עונים נכון וזוכים בהנחה על כלי חימר מסורתיים. שווה לנסות! 👉 ${appLink}`);
   const wrap=document.getElementById('friendRows');
-  [1,2,3].forEach(i=>{
-    wrap.innerHTML+=`<div class="sfriend-row">
-      <div class="sfriend-label">חבר/ה ${i}</div>
-      <div style="display:flex;gap:8px;margin-bottom:6px">
-        <input id="fn${i}" placeholder="שם החבר/ה" style="flex:1;padding:11px 12px;background:#F5F8FF;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:Rubik,sans-serif;font-size:.85rem;color:var(--text);outline:none"/>
-        <button onclick="pickContact(${i})" style="background:var(--teal);color:#fff;border:none;border-radius:var(--radius-sm);padding:0 14px;font-size:1.2rem;cursor:pointer;flex-shrink:0" title="בחר מאנשי קשר">📋</button>
+  wrap.innerHTML=`
+    <div style="background:#f0fdf4;border:1.5px solid #86efac;border-radius:var(--radius);padding:16px;margin-bottom:14px;text-align:center">
+      <div style="font-size:.9rem;color:var(--soft);margin-bottom:14px;line-height:1.6">
+        שתפו את החידון עם 3 חברים דרך WhatsApp<br/>
+        <strong style="color:var(--blue-dark)">וקבלו משלוח חינם!</strong>
       </div>
-      <div class="sfriend-inputs">
-        <input type="tel" id="fr${i}" placeholder="מספר טלפון" inputmode="tel"/>
-        <button class="send-btn" onclick="sendFriend(${i})" id="sb${i}">📤 שלח</button>
-      </div>
-      <div class="sent-ok" id="sok${i}">✅ נשלח לחבר/ה!</div>
+      ${[1,2,3].map(i=>`
+        <div style="margin-bottom:10px">
+          <a id="waBtn${i}" href="https://wa.me/?text=${msg}" target="_blank" rel="noopener"
+            onclick="onWAShare(${i})"
+            style="display:flex;align-items:center;justify-content:center;gap:10px;background:#25d366;color:#fff;text-decoration:none;border-radius:var(--radius-sm);padding:13px;font-family:Rubik,sans-serif;font-size:.95rem;font-weight:700;transition:opacity .2s">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.116 1.522 5.847L.057 23.882l6.198-1.624A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.808 9.808 0 01-5.001-1.368l-.36-.214-3.68.965.982-3.587-.234-.368A9.816 9.816 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg>
+            שלח לחבר/ה ${i}
+            <span id="waCheck${i}" style="display:none">✓</span>
+          </a>
+          <div class="sent-ok" id="sok${i}" style="font-size:.75rem;color:var(--green);font-weight:700;margin-top:4px;display:none">✅ נשלח!</div>
+        </div>`).join('')}
     </div>`;
-  });
 }
 
-async function pickContact(i){
-  if(!('contacts' in navigator&&'ContactsManager' in window)){
-    // fallback — focus on name field
-    document.getElementById('fn'+i).focus();
-    alert('הדפדפן שלך אינו תומך בגישה לאנשי קשר. הכנס את הפרטים ידנית.');
-    return;
-  }
-  try{
-    const props=['name','tel'];
-    const opts={multiple:false};
-    const contacts=await navigator.contacts.select(props,opts);
-    if(contacts&&contacts.length>0){
-      const c=contacts[0];
-      if(c.name&&c.name.length>0) document.getElementById('fn'+i).value=c.name[0];
-      if(c.tel&&c.tel.length>0) document.getElementById('fr'+i).value=c.tel[0].replace(/[^0-9+]/g,'');
+function onWAShare(i){
+  if(sentSet.has(i)) return;
+  sentSet.add(i);
+  setTimeout(()=>{
+    const btn=document.getElementById('waBtn'+i);
+    const check=document.getElementById('waCheck'+i);
+    const ok=document.getElementById('sok'+i);
+    if(btn){btn.style.background='#128c4a';}
+    if(check){check.style.display='inline';}
+    if(ok){ok.style.display='block';}
+    document.getElementById('sd'+i)?.classList.add('filled');
+    playWin();
+    if(sentSet.size>=3){
+      freeShip=true;burst();setTimeout(()=>playFinale(),400);
+      const storeMsg=`🚚 לקוח זכה במשלוח חינם!\n👤 ${userData.name||''}\n📞 ${userData.phone||''}\nשלח את האפליקציה ל-3 חברים ✅`;
+      setTimeout(()=>window.open(`https://wa.me/972528650003?text=${encodeURIComponent(storeMsg)}`,'_blank'),800);
+      showFreeShipPop();
     }
-  }catch(e){
-    console.log('Contact pick cancelled or failed',e);
-  }
+  },1500);
 }
+
+
 function showFreeShipPop(){
   const old=document.getElementById('freeShipPopOv');if(old)old.remove();
   const ov=document.createElement('div');
@@ -1037,34 +1045,7 @@ function closeFreeShipPop(){
 }
 function openShare(){shareRetSec='secProducts';showSec('secShare');document.getElementById('stepBar').style.display='none';playPop();}
 function goBack(){showSec(shareRetSec);if(shareRetSec!=='secDetails')document.getElementById('stepBar').style.display='flex';}
-function sendFriend(i){
-  const name=document.getElementById('fn'+i)?document.getElementById('fn'+i).value.trim():'';
-  const ph=document.getElementById('fr'+i).value.trim().replace(/\D/g,'');
-  if(ph.length<9){
-    document.getElementById('fr'+i).style.borderColor='#FF4444';
-    setTimeout(()=>document.getElementById('fr'+i).style.borderColor='',2000);
-    alert('אנא הזינו מספר טלפון תקין');return;
-  }
-  if(sentSet.has(i))return;
-  const appLink=window.location.href;
-  const msg=`היי, מצאתי משהו מעניין. חידון בנושא תזונה כאשר אם עונים נכון - מקבלים הנחה בקנייה של מוצרי "פשוט כנרת". שווה ביותר!! 👉 ${appLink}`;
-  window.open(`https://wa.me/972${ph.replace(/^0/,'')}?text=${encodeURIComponent(msg)}`,'_blank');
-  sentSet.add(i);
-  document.getElementById('sb'+i).textContent='✓ נשלח';
-  document.getElementById('sb'+i).style.background='var(--green)';
-  document.getElementById('fr'+i).disabled=true;
-  document.getElementById('sok'+i).style.display='block';
-  document.getElementById('sd'+i).classList.add('filled');
-  playWin();
-  if(sentSet.size>=3){
-    freeShip=true;burst();setTimeout(()=>playFinale(),400);
-    const storeMsg=`🚚 לקוח זכה במשלוח חינם!\n👤 ${userData.name||''}\n📞 ${userData.phone||''}\nשלח את האפליקציה ל-3 חברים ✅`;
-    setTimeout(()=>window.open(`https://wa.me/972528650003?text=${encodeURIComponent(storeMsg)}`,'_blank'),800);
-    // פופ-אפ משלוח חינם
-    showFreeShipPop();
-  }
-}
-
+// sendFriend replaced by onWAShare
 // ── INIT ───────────────────────────────────────────────────────
 function initPayButtons(){
   const wrap=document.getElementById('payBtns');
@@ -1116,6 +1097,6 @@ window.addEventListener('DOMContentLoaded',()=>{
   document.querySelector('main').before(stepBarEl);
 });
 </script>
-<div style="text-align:center;padding:20px 0 8px;font-size:.65rem;color:#94a3b8;letter-spacing:.05em">v1.5</div>
+<div style="text-align:center;padding:20px 0 8px;font-size:.65rem;color:#94a3b8;letter-spacing:.05em">v1.6</div>
 </body>
 </html>
