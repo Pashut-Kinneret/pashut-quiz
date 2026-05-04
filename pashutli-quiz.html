@@ -48,7 +48,7 @@ document.getElementById('pwa-manifest').href = URL.createObjectURL(blob);
   --orange:#F5A623;
   --yellow:#FFD166;
   --white:#FFFFFF;
-  --bg:linear-gradient(180deg,#C8E8F8 0%,#E8F4FC 40%,#F0F8FF 100%);
+  --bg:#C8E8F8;
   --surface:#FFFFFF;
   --surface2:#F0F7FF;
   --border:#C0DCF0;
@@ -60,7 +60,7 @@ document.getElementById('pwa-manifest').href = URL.createObjectURL(blob);
   --shadow:0 4px 24px rgba(27,63,114,.1);
   --shadow-md:0 8px 36px rgba(27,63,114,.15);
 }
-body{font-family:'Rubik',sans-serif;background:var(--bg);background-attachment:fixed;color:var(--text);min-height:100vh;direction:rtl;overflow-x:hidden}
+body{font-family:'Rubik',sans-serif;background:linear-gradient(180deg,#C8E8F8 0%,#E8F4FC 40%,#F0F8FF 100%) fixed;background-size:100% 100vh;color:var(--text);min-height:100vh;direction:rtl;overflow-x:hidden}
 
 /* ── HEADER ── */
 .app-header{background:rgba(255,255,255,.85);backdrop-filter:blur(16px);padding:0;position:sticky;top:0;z-index:200;box-shadow:0 2px 16px rgba(27,63,114,.08);border-bottom:1px solid rgba(192,220,240,.5)}
