@@ -869,28 +869,44 @@ function toggleCart(pid){
 
 function showBonusPop(count){
   const old=document.getElementById('upsellPopOv');if(old)old.remove();
-  const cartDisc=count===1?0:Math.min(count-1,4);
-  const td=Math.min(correct+cartDisc,10);
-  const nextTd=Math.min(correct+count-1,14);
-  const hasMore=nextTd>td;
+  // ההנחה הנוכחית = חידון + בונוס עגלה עד כה
+  const cartDisc=Math.min(count-1,4);
+  const td=Math.min(correct+cartDisc,14);
+  // ההנחה שתתווסף בבחירת המוצר הבא
+  const nextCartDisc=Math.min(count,4);
+  const nextTd=Math.min(correct+nextCartDisc,14);
+  const hasMore=nextTd>td&&count<5;
   const isFirst=count===1;
   const ov=document.createElement('div');
   ov.id='upsellPopOv';
-  ov.style.cssText='position:fixed;inset:0;z-index:900;display:flex;align-items:center;justify-content:center;background:rgba(0,20,60,.55);backdrop-filter:blur(8px);opacity:0;transition:opacity .25s;padding:20px';
+  ov.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:900;display:flex;align-items:center;justify-content:center;background:rgba(0,20,60,.55);backdrop-filter:blur(8px);opacity:0;transition:opacity .25s;padding:20px';
   ov.innerHTML=`<div id="upsellBox" style="background:#fff;border-radius:24px;padding:28px 24px;max-width:310px;width:100%;text-align:center;transform:scale(.7) translateY(60px);transition:transform .4s cubic-bezier(.34,1.56,.64,1);box-shadow:0 24px 80px rgba(0,63,138,.3)">
     <div style="font-size:2.5rem;margin-bottom:4px">${isFirst?'🎉':'🛒'}</div>
     <div style="font-size:.9rem;font-weight:700;color:var(--blue);margin-bottom:8px">${isFirst?'בחרת מוצר ראשון!':'הוספת מוצר '+count+'!'}</div>
     <div style="background:linear-gradient(135deg,var(--blue-dark),var(--blue-mid));border-radius:16px;padding:12px 32px;display:inline-block;margin-bottom:14px;box-shadow:0 6px 20px rgba(0,63,138,.3)">
       <div style="font-size:3.5rem;font-weight:900;color:#fff;line-height:1">${td}%</div>
-      <div style="font-size:.78rem;color:rgba(255,255,255,.8);font-weight:600">הנחה על כל העגלה</div>
+      <div style="font-size:.78rem;color:rgba(255,255,255,.8);font-weight:600">ההנחה שלך עכשיו</div>
     </div>
-    <div style="background:#EBF9F4;border:1.5px solid #86EFAC;border-radius:12px;padding:10px 14px;font-size:.82rem;font-weight:700;color:#15803D;margin-bottom:16px">🔥 ${isFirst?`הוסף מוצר נוסף וקבל ${nextTd}% הנחה!`:(hasMore?`הוסף עוד מוצר וקבל ${nextTd}% הנחה!`:'אם תבחר במוצר נוסף — תקבל הנחה נוספת!')}</div>
-    <button onclick="document.getElementById('upsellPopOv').remove()" style="background:linear-gradient(135deg,var(--blue),var(--blue-mid));color:#fff;border:none;border-radius:12px;padding:12px;font-family:Rubik,sans-serif;font-size:.92rem;font-weight:700;cursor:pointer;width:100%">המשך לקנות ←</button>
+    ${hasMore
+      ?`<div style="background:#EBF9F4;border:1.5px solid #86EFAC;border-radius:12px;padding:10px 14px;font-size:.85rem;font-weight:700;color:#15803D;margin-bottom:16px">
+          🔥 הוסף מוצר נוסף וקבל <span style="font-size:1.1rem">${nextTd}%</span> הנחה!
+        </div>`
+      :`<div style="background:#FFF9E6;border:1.5px solid #FFB800;border-radius:12px;padding:10px 14px;font-size:.85rem;font-weight:700;color:#92400E;margin-bottom:16px">
+          🏆 הגעת להנחה המקסימלית — ${td}%!
+        </div>`
+    }
+    <button onclick="var o=document.getElementById('upsellPopOv');o.style.opacity='0';o.style.pointerEvents='none';setTimeout(function(){o.remove();},280);" style="background:linear-gradient(135deg,var(--blue),var(--blue-mid));color:#fff;border:none;border-radius:12px;padding:12px;font-family:Rubik,sans-serif;font-size:.92rem;font-weight:700;cursor:pointer;width:100%">המשך לקנות ←</button>
   </div>`;
   document.body.appendChild(ov);
   spawnCoins();playPop();
-  requestAnimationFrame(()=>{ov.style.opacity='1';document.getElementById('upsellBox').style.transform='scale(1) translateY(0)';});
-  ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
+  requestAnimationFrame(()=>{
+    ov.style.opacity='1';
+    ov.style.pointerEvents='auto';
+    document.getElementById('upsellBox').style.transform='scale(1) translateY(0)';
+  });
+  ov.addEventListener('click',e=>{
+    if(e.target===ov){ov.style.opacity='0';ov.style.pointerEvents='none';setTimeout(()=>ov.remove(),280);}
+  });
 }
 
 function renderCartSum(){
@@ -1100,6 +1116,6 @@ window.addEventListener('DOMContentLoaded',()=>{
   document.querySelector('main').before(stepBarEl);
 });
 </script>
-<div style="text-align:center;padding:20px 0 8px;font-size:.65rem;color:#94a3b8;letter-spacing:.05em">v1.4</div>
+<div style="text-align:center;padding:20px 0 8px;font-size:.65rem;color:#94a3b8;letter-spacing:.05em">v1.5</div>
 </body>
 </html>
