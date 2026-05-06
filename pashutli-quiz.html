@@ -419,7 +419,21 @@ body{
 }
 .wa-btn:active{transform:scale(.97)}
 
-/* Coins animation */
+/* Pulsing banner */
+@keyframes gentlePulse{0%,100%{opacity:1;box-shadow:0 4px 20px rgba(37,211,102,.25)}50%{opacity:.82;box-shadow:0 4px 28px rgba(37,211,102,.45)}}
+.free-ship-banner{
+  background:linear-gradient(135deg,#1a4a2a,#1e6b35);
+  border-radius:14px;padding:13px 16px;
+  display:flex;align-items:center;gap:10px;
+  cursor:pointer;margin-bottom:10px;
+  animation:gentlePulse 2.2s ease-in-out infinite;
+  border:1px solid rgba(37,211,102,.25);
+}
+.free-ship-banner .icon{font-size:22px;flex-shrink:0}
+.free-ship-banner .txt{flex:1}
+.free-ship-banner .txt strong{display:block;font-size:14px;font-weight:800;color:#fff;font-family:Heebo,sans-serif}
+.free-ship-banner .txt span{font-size:11px;color:rgba(255,255,255,.6);font-weight:500}
+.free-ship-banner .arrow{color:rgba(255,255,255,.5);font-size:16px}
 .coin-fly{
   position:fixed;font-size:20px;
   pointer-events:none;z-index:999;
@@ -597,6 +611,14 @@ body{
   </div>
   <div class="prod-scroll" id="prodList"></div>
   <div class="prod-footer" id="prodFooter">
+    <div class="free-ship-banner" onclick="openSharePopup()">
+      <span class="icon">🚚</span>
+      <div class="txt">
+        <strong>רוצה משלוח חינם?</strong>
+        <span>שלח את החידון ל-3 חברים וחסוך ₪35</span>
+      </div>
+      <span class="arrow">›</span>
+    </div>
     <button class="wa-btn" onclick="sendOrder()">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.116 1.522 5.847L.057 23.882l6.198-1.624A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.808 9.808 0 01-5.001-1.368l-.36-.214-3.68.965.982-3.587-.234-.368A9.816 9.816 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg>
       שלח הזמנה בוואטסאפ
@@ -1137,6 +1159,92 @@ function closeUpsell(){
   setTimeout(()=>ov.remove(),260);
 }
 
+function openSharePopup(){
+  snd('pop');
+  const old=document.getElementById('shareOv');if(old)old.remove();
+  const appLink=window.location.href;
+  const msg=encodeURIComponent('היי! מצאתי חידון בריאות של פשוט כנרת — עונים נכון וזוכים בהנחה על כלי חימר מסורתיים. שווה לנסות! 👉 '+appLink);
+  const ov=document.createElement('div');
+  ov.id='shareOv';
+  ov.style.cssText='position:fixed;inset:0;z-index:800;display:flex;align-items:flex-end;justify-content:center;background:rgba(10,6,3,.75);backdrop-filter:blur(10px);opacity:0;transition:opacity .25s;padding:0';
+  const sentFriends=new Set();
+  ov.innerHTML=`
+    <div id="shareBox" style="background:#FBF6EF;border-radius:24px 24px 0 0;padding:28px 24px 48px;width:100%;max-width:480px;transform:translateY(100%);transition:transform .4s cubic-bezier(.34,1.56,.64,1)">
+      <div style="width:36px;height:4px;background:rgba(44,24,16,.15);border-radius:2px;margin:0 auto 20px"></div>
+      <div style="text-align:center;margin-bottom:6px">
+        <span style="font-size:2.2rem">🚚</span>
+        <div style="font-family:Heebo,sans-serif;font-size:20px;font-weight:900;color:#2C1810;margin-top:4px">משלוח חינם!</div>
+        <div style="font-size:13px;color:#A08070;margin-top:4px;line-height:1.5">שלחו את החידון ל-3 חברים<br/>וחסכו ₪35 על המשלוח</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-top:20px">
+        ${[1,2,3].map(i=>`
+          <div>
+            <a id="wfBtn${i}" href="https://wa.me/?text=${msg}" target="_blank" rel="noopener"
+               onclick="markFriend(${i})"
+               style="display:flex;align-items:center;justify-content:center;gap:10px;
+                      background:#25D366;color:#fff;text-decoration:none;
+                      border-radius:14px;padding:14px 20px;
+                      font-family:Heebo,sans-serif;font-size:15px;font-weight:800;
+                      transition:opacity .2s;box-shadow:0 4px 16px rgba(37,211,102,.3)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.116 1.522 5.847L.057 23.882l6.198-1.624A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.808 9.808 0 01-5.001-1.368l-.36-.214-3.68.965.982-3.587-.234-.368A9.816 9.816 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg>
+              שלח לחבר/ה ${i}
+              <span id="wfCheck${i}" style="display:none;margin-right:4px">✓</span>
+            </a>
+          </div>`).join('')}
+      </div>
+      <div style="display:flex;justify-content:center;gap:10px;margin-top:16px" id="shareDots">
+        <div style="width:10px;height:10px;border-radius:50%;background:rgba(44,24,16,.12);transition:all .4s" id="sd1"></div>
+        <div style="width:10px;height:10px;border-radius:50%;background:rgba(44,24,16,.12);transition:all .4s" id="sd2"></div>
+        <div style="width:10px;height:10px;border-radius:50%;background:rgba(44,24,16,.12);transition:all .4s" id="sd3"></div>
+      </div>
+      <button onclick="closeSharePopup()" style="width:100%;padding:13px;background:transparent;border:1.5px solid rgba(44,24,16,.15);border-radius:14px;font-family:Heebo,sans-serif;font-size:15px;font-weight:700;color:#A08070;cursor:pointer;margin-top:14px">
+        סגור
+      </button>
+    </div>`;
+  document.body.appendChild(ov);
+
+  // track sent friends
+  window._shareSent=new Set();
+  window.markFriend=function(i){
+    setTimeout(()=>{
+      window._shareSent.add(i);
+      const btn=document.getElementById('wfBtn'+i);
+      const check=document.getElementById('wfCheck'+i);
+      const dot=document.getElementById('sd'+i);
+      if(btn){btn.style.background='#128C7E';}
+      if(check)check.style.display='inline';
+      if(dot){dot.style.background='#6FB47C';dot.style.transform='scale(1.2)';}
+      snd('win');
+      if(window._shareSent.size>=3){
+        setTimeout(()=>{
+          closeSharePopup();
+          freeShip=true;
+          toast('🎉 משלוח חינם! ההנחה הוחלה','ok',3000);
+          burst();
+          const storeMsg='🚚 לקוח זכה במשלוח חינם!\nשלח חידון ל-3 חברים ✅';
+          setTimeout(()=>window.open('https://wa.me/'+WA+'?text='+encodeURIComponent(storeMsg),'_blank'),800);
+        },800);
+      }
+    },1200);
+  };
+
+  requestAnimationFrame(()=>{
+    ov.style.opacity='1';
+    document.getElementById('shareBox').style.transform='translateY(0)';
+  });
+  ov.addEventListener('click',e=>{if(e.target===ov)closeSharePopup();});
+}
+
+function closeSharePopup(){
+  const ov=document.getElementById('shareOv');
+  if(!ov)return;
+  ov.style.opacity='0';
+  document.getElementById('shareBox').style.transform='translateY(100%)';
+  setTimeout(()=>ov.remove(),320);
+}
+
+let freeShip=false;
+
 function sendOrder(){
   if(cart.size===0)return;
   const disc=Math.min(correct+cartBonus,14);
@@ -1146,13 +1254,15 @@ function sendOrder(){
     const f=Math.round(p.price*(1-disc/100));sub+=f;
     return '• '+p.name+' — ₪'+f+' ('+p.url+')';
   }).join('\n');
+  const ship=freeShip?'חינם ✅':'₪'+SHIP;
+  const grand=freeShip?sub:sub+SHIP;
   const msg='🛒 הזמנה חדשה — פשוט כנרת!\n'
     +'════════════\n'
-    +'📦 '+lines+'\n'
+    +lines+'\n'
     +'════════════\n'
     +'🏷️ הנחה: '+disc+'%\n'
-    +'💰 סה"כ: ₪'+(sub+SHIP)+'\n'
-    +'🚚 משלוח: ₪'+SHIP+'\n'
+    +'🚚 משלוח: '+ship+'\n'
+    +'💰 סה"כ: ₪'+grand+'\n'
     +'════════════\n'
     +'⏱ '+new Date().toLocaleString('he-IL');
   window.open('https://wa.me/'+WA+'?text='+encodeURIComponent(msg),'_blank');
