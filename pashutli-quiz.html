@@ -1252,7 +1252,7 @@ function sendOrder(){
   let sub=0;
   const lines=items.map(p=>{
     const f=Math.round(p.price*(1-disc/100));sub+=f;
-    return '• '+p.name+' — ₪'+f+' ('+p.url+')';
+    return '• *'+p.name+'* — ₪'+f+'\n  🔗 '+p.url;
   }).join('\n');
   const ship=freeShip?'חינם ✅':'₪'+SHIP;
   const grand=freeShip?sub:sub+SHIP;
