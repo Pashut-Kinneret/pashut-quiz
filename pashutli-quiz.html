@@ -16,38 +16,29 @@
 
 /* ═══ DESIGN TOKENS ═══ */
 :root{
-  /* Earthy naturals */
   --clay:       #C1714A;
   --clay-dark:  #8B4A2E;
   --clay-light: #E8A882;
-  --earth:      #5C3D1E;
+  --earth:      #3D2010;
   --sage:       #6FB47C;
   --sage-light: #8FCC9A;
-  --sage-pale:  #E2F3E6;
-  --kinneret:   #2B6CB0;
-  --sky:        #87CEEB;
-  --sky-pale:   #E8F4FD;
-  --cream:      #FAF5EE;
-  --warm-white: #FFFDF8;
+  --sage-pale:  #EBF5ED;
   --gold:       #D4A017;
   --gold-light: #F5D060;
-  /* UI */
-  --bg:         #F5EFE6;
-  --surface:    #FFFDF8;
-  --surface2:   #F0E8DC;
-  --border:     rgba(139,74,46,.15);
+  --bg:         #FBF6EF;
+  --surface:    #FFFFFF;
+  --surface2:   #F4EDE3;
+  --border:     rgba(139,74,46,.12);
   --text:       #2C1810;
   --text-soft:  #6B4C3B;
   --text-muted: #A08070;
-  /* Geometry */
-  --r-sm: 12px;
-  --r-md: 18px;
-  --r-lg: 24px;
-  --r-xl: 32px;
-  /* Shadows */
-  --sh-sm: 0 2px 12px rgba(92,61,30,.12);
-  --sh-md: 0 6px 28px rgba(92,61,30,.16);
-  --sh-lg: 0 12px 48px rgba(92,61,30,.2);
+  --r-sm:  12px;
+  --r-md:  18px;
+  --r-lg:  24px;
+  --r-xl:  32px;
+  --sh-sm: 0 2px 16px rgba(92,61,30,.08);
+  --sh-md: 0 6px 32px rgba(92,61,30,.12);
+  --sh-lg: 0 12px 48px rgba(92,61,30,.16);
 }
 
 body{
@@ -116,7 +107,7 @@ body::before{
 }
 .coin-badge span{font-size:.82rem;font-weight:800;color:#5C3A00}
 .progress-bar-wrap{height:3px;background:var(--surface2)}
-.progress-bar-fill{height:3px;background:linear-gradient(90deg,var(--clay),var(--gold));transition:width .5s ease;width:0%}
+.progress-bar-fill{height:3px;background:linear-gradient(90deg,var(--clay),var(--sage));transition:width .5s ease;width:0%}
 
 /* ═══ HERO ═══ */
 .hero{
@@ -713,6 +704,38 @@ main{
   .pgrid{grid-template-columns:1fr 1fr}
   .hero h2{font-size:1.7rem}
 }
+
+/* ── BUBBLE ICONS (כללית מושלם style) ── */
+.bubble-row{display:flex;gap:12px;justify-content:center;padding:16px 20px 8px;overflow-x:auto;scrollbar-width:none}
+.bubble-row::-webkit-scrollbar{display:none}
+.bubble{display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0;cursor:pointer}
+.bubble-icon{width:56px;height:56px;border-radius:50%;background:#fff;box-shadow:0 4px 16px rgba(92,61,30,.12);display:flex;align-items:center;justify-content:center;font-size:26px;transition:transform .2s,box-shadow .2s;border:2px solid rgba(193,113,74,.08)}
+.bubble-icon:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(92,61,30,.18)}
+.bubble-icon.active{border-color:var(--clay);background:rgba(193,113,74,.06)}
+.bubble-label{font-size:10px;font-weight:700;color:var(--text-soft)}
+
+/* ── STAT CARD (כללית מושלם style) ── */
+.stat-card{background:#fff;border-radius:var(--r-lg);padding:20px;margin:0 14px 14px;box-shadow:var(--sh-md);border:1px solid var(--border);position:relative;overflow:hidden}
+.stat-card::after{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--clay),var(--sage))}
+.stat-main{font-size:42px;font-weight:900;color:var(--earth);line-height:1;font-family:'Heebo',sans-serif}
+.stat-main span{font-size:20px;color:var(--text-muted)}
+.stat-sub{font-size:13px;color:var(--text-muted);margin-top:4px}
+.stat-goals{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.goal-item{background:var(--surface2);border-radius:var(--r-sm);padding:12px;text-align:center}
+.goal-item .glabel{font-size:10px;color:var(--text-muted);margin-bottom:4px}
+.goal-item .gval{font-size:13px;font-weight:800;color:var(--earth)}
+.coin-reward{display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,#FFF8E1,#FFF0C0);border:1px solid rgba(212,160,23,.25);border-radius:20px;padding:4px 10px;font-size:11px;font-weight:800;color:#7A5500;margin-top:8px}
+
+/* ── BOTTOM NAV (כללית מושלם style) ── */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(251,246,239,.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid rgba(193,113,74,.1);display:flex;justify-content:space-around;padding:10px 0 20px;z-index:300;box-shadow:0 -4px 20px rgba(92,61,30,.08)}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:0 16px}
+.nav-icon{font-size:22px;transition:transform .2s}
+.nav-label{font-size:9px;font-weight:700;color:var(--text-muted)}
+.nav-item.active .nav-icon{transform:scale(1.1)}
+.nav-item.active .nav-label{color:var(--clay)}
+
+/* padding for bottom nav */
+main{padding-bottom:100px!important}
 </style>
 </head>
 <body>
@@ -813,9 +836,37 @@ document.head.appendChild(link);
   </div>
 
   <svg class="hero-wave" viewBox="0 0 1440 48" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M0,24 C360,48 1080,0 1440,24 L1440,48 L0,48 Z" fill="#F5EFE6"/>
+    <path d="M0,24 C360,48 1080,0 1440,24 L1440,48 L0,48 Z" fill="#FBF6EF"/>
   </svg>
 </section>
+
+<!-- Bubble categories -->
+<div class="bubble-row" id="bubbleRow" style="display:none">
+  <div class="bubble">
+    <div class="bubble-icon active">🌱</div>
+    <span class="bubble-label">נביטה</span>
+  </div>
+  <div class="bubble">
+    <div class="bubble-icon">🍞</div>
+    <span class="bubble-label">אפייה</span>
+  </div>
+  <div class="bubble">
+    <div class="bubble-icon">🥬</div>
+    <span class="bubble-label">כבישה</span>
+  </div>
+  <div class="bubble">
+    <div class="bubble-icon">♨️</div>
+    <span class="bubble-label">אידוי</span>
+  </div>
+  <div class="bubble">
+    <div class="bubble-icon">🌿</div>
+    <span class="bubble-label">זרעים</span>
+  </div>
+  <div class="bubble">
+    <div class="bubble-icon">🧠</div>
+    <span class="bubble-label">תזונה</span>
+  </div>
+</div>
 
 <!-- Step bar -->
 <div id="stepBar" style="display:none;justify-content:center;align-items:center;padding:14px 0 2px;gap:0;max-width:600px;margin:0 auto">
@@ -959,7 +1010,7 @@ document.head.appendChild(link);
 
 </main>
 
-<div style="text-align:center;padding:16px 0 8px;font-size:.62rem;color:var(--text-muted)">v2.3</div>
+<div style="text-align:center;padding:16px 0 8px;font-size:.62rem;color:var(--text-muted)">v2.4</div>
 
 <script>
 const SND={
@@ -1267,6 +1318,8 @@ function goQuiz(){
   qList=qList.slice(0,10);
   qIdx=0;correct=0;answered=[];
   setStep(2);showSec('secQuiz');
+  document.getElementById('bubbleRow').style.display='flex';
+  document.getElementById('bottomNav').style.display='flex';
   playIntro();showQ();
 }
 
@@ -1622,5 +1675,24 @@ window.addEventListener('DOMContentLoaded',()=>{
   document.querySelector('main').before(stepBarEl);
 });
 </script>
+<!-- Bottom Nav -->
+<nav class="bottom-nav" id="bottomNav" style="display:none">
+  <div class="nav-item active" onclick="goHome()">
+    <span class="nav-icon">🏠</span>
+    <span class="nav-label">ראשי</span>
+  </div>
+  <div class="nav-item" onclick="openShare()">
+    <span class="nav-icon">📤</span>
+    <span class="nav-label">שיתוף</span>
+  </div>
+  <div class="nav-item" onclick="goProducts()">
+    <span class="nav-icon">🏺</span>
+    <span class="nav-label">מוצרים</span>
+  </div>
+  <div class="nav-item">
+    <span class="nav-icon">🪙</span>
+    <span class="nav-label">הנחה</span>
+  </div>
+</nav>
 </body>
 </html>
