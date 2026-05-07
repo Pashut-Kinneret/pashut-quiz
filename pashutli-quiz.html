@@ -1156,7 +1156,18 @@ function toggleCart(pid,disc){
   }
   cartBonus=Math.min(cart.size>1?cart.size-1:0,4);
   refreshPrices();
-  document.getElementById('prodFooter').style.display=cart.size>0?'block':'none';
+  // עדכן באנר
+  const footer=document.getElementById('prodFooter');
+  const lbl=document.getElementById('cartCountLabel');
+  const disc2=document.getElementById('footerDisc');
+  if(cart.size>0){
+    footer.style.display='block';
+    const n=cart.size;
+    lbl.textContent=n===1?'בחרת מוצר 1':('בחרת '+n+' מוצרים');
+    if(disc2)disc2.textContent=Math.min(correct+cartBonus,14)+'%';
+  } else {
+    footer.style.display='none';
+  }
 }
 
 function showUpsell(count,td,disc){
@@ -1519,9 +1530,29 @@ function buildSummary(){
 
 <!-- PROD FOOTER - outside screen, fixed position -->
 <div class="prod-footer" id="prodFooter" style="display:none">
-  <button onclick="goSummary()" style="width:100%;padding:16px;background:linear-gradient(135deg,var(--clay),var(--clay-d));color:#fff;border:none;border-radius:var(--r);font-family:Heebo,sans-serif;font-size:17px;font-weight:800;cursor:pointer;box-shadow:0 6px 24px rgba(193,113,74,.35);letter-spacing:-.01em">
-    📋 לסיכום ההזמנה ←
-  </button>
+  <div onclick="goSummary()" style="
+    background:linear-gradient(135deg,var(--clay),var(--clay-d));
+    border-radius:var(--r);padding:14px 18px;
+    display:flex;align-items:center;justify-content:space-between;
+    cursor:pointer;
+    box-shadow:0 6px 24px rgba(193,113,74,.4);
+    border:none;width:100%;
+  ">
+    <div style="display:flex;align-items:center;gap:10px">
+      <span style="font-size:1.6rem">📋</span>
+      <div>
+        <div style="font-family:Heebo,sans-serif;font-size:16px;font-weight:900;color:#fff;line-height:1.2">סיכום הזמנה</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.7);margin-top:2px" id="cartCountLabel">בחרת מוצר</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div style="text-align:left">
+        <div style="font-family:Heebo,sans-serif;font-size:18px;font-weight:900;color:#fff" id="footerDisc">0%</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.65)">הנחה</div>
+      </div>
+      <span style="font-size:22px;color:rgba(255,255,255,.8)">←</span>
+    </div>
+  </div>
 </div>
 
 </body>
