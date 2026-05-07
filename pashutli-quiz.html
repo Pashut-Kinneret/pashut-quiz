@@ -484,7 +484,7 @@ body{
 .det-inp::placeholder{color:var(--brown-s)}
 .det-inp.err{border-color:#E05A40}
 @keyframes gentlePulse{0%,100%{opacity:1;box-shadow:0 4px 16px rgba(37,211,102,.2)}50%{opacity:.8;box-shadow:0 4px 24px rgba(37,211,102,.4)}}
-.fship-banner{background:linear-gradient(135deg,#1a4a2a,#1e6b35);border-radius:12px;padding:9px 14px;display:flex;align-items:center;gap:8px;cursor:pointer;animation:gentlePulse 2.2s ease-in-out infinite;border:1px solid rgba(37,211,102,.2);margin-bottom:8px}
+.fship-banner{background:linear-gradient(135deg,#1a4a2a,#1e6b35);border-radius:12px;padding:11px 14px;display:flex;align-items:center;gap:8px;cursor:pointer;animation:gentlePulse 2.2s ease-in-out infinite;border:1px solid rgba(37,211,102,.2);margin-bottom:8px}
 .fship-banner .icon{font-size:18px;flex-shrink:0}
 .fship-banner .txt strong{display:block;font-size:12px;font-weight:800;color:#fff;font-family:Heebo,sans-serif}
 .fship-banner .txt span{font-size:10px;color:rgba(255,255,255,.6)}
@@ -1322,6 +1322,8 @@ let freeShip=false;
 
 function goSummary(){
   if(cart.size===0){toast('בחרו לפחות מוצר אחד','ng');return;}
+  // הסתר את באנר סיכום הזמנה בזמן שנמצאים בסיכום
+  document.getElementById('prodFooter').style.display='none';
   buildSummary();
   show('s-summary');
   window.scrollTo(0,0);
@@ -1488,7 +1490,7 @@ function buildSummary(){
   </div>
 
   <!-- תחתית קבועה -->
-  <div style="position:fixed;bottom:0;left:0;right:0;background:rgba(251,246,239,.97);backdrop-filter:blur(16px);border-top:1px solid rgba(139,74,46,.1);padding:8px 14px 22px;z-index:100">
+  <div style="position:fixed;bottom:0;left:0;right:0;background:rgba(251,246,239,.97);backdrop-filter:blur(16px);border-top:1px solid rgba(139,74,46,.1);padding:8px 14px 28px;z-index:200">
     <div class="free-ship-banner" onclick="openSharePopup()" style="margin-bottom:8px">
       <span class="icon">🚚</span>
       <div class="txt">
@@ -1517,7 +1519,7 @@ function buildSummary(){
     </div>
   </div>
   <div style="flex:1;overflow-y:auto;background:var(--cream);-webkit-overflow-scrolling:touch">
-    <div style="padding:14px 16px 190px">
+    <div style="padding:14px 16px 220px">
       <div id="summaryBody"></div>
       <div style="height:14px"></div>
       <div style="background:#fff;border-radius:var(--r);padding:16px;box-shadow:0 2px 12px rgba(92,61,30,.07);border:1px solid rgba(139,74,46,.08)">
@@ -1533,7 +1535,7 @@ function buildSummary(){
       </div>
     </div>
   </div>
-  <div style="position:fixed;bottom:0;left:0;right:0;background:rgba(251,246,239,.97);backdrop-filter:blur(16px);border-top:1px solid rgba(139,74,46,.1);padding:8px 14px 22px;z-index:100">
+  <div style="position:fixed;bottom:0;left:0;right:0;background:rgba(251,246,239,.97);backdrop-filter:blur(16px);border-top:1px solid rgba(139,74,46,.1);padding:8px 14px 28px;z-index:200">
     <div class="fship-banner" onclick="openSharePopup()">
       <span class="icon">🚚</span>
       <div class="txt"><strong>רוצה משלוח חינם?</strong><span>שלח ל-3 חברים וחסוך ₪35</span></div>
@@ -1548,7 +1550,7 @@ function buildSummary(){
 
 
 <!-- PROD FOOTER - outside screen, fixed position -->
-<div class="prod-footer" id="prodFooter" style="display:none">
+<div class="prod-footer" id="prodFooter" style="display:none;z-index:150">
   <div onclick="goSummary()" style="
     background:linear-gradient(135deg,var(--clay),var(--clay-d));
     border-radius:var(--r);padding:14px 18px;
