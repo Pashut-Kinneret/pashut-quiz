@@ -1141,6 +1141,25 @@ function renderProds(disc){
 }
 
 
+
+function refreshPrices(){
+  const disc=Math.min(correct+cartBonus,14);
+  PRODS.forEach(function(p){
+    const el=document.getElementById('pnew_'+p.id);
+    if(el){el.textContent='₪'+Math.round(p.price*(1-disc/100));}
+    const saveEl=document.getElementById('psave_'+p.id);
+    if(saveEl){saveEl.textContent='-'+disc+'%';}
+    const savingEl=document.getElementById('psaving_'+p.id);
+    if(savingEl){savingEl.textContent='חיסכון ₪'+(p.price-Math.round(p.price*(1-disc/100)));}
+    const btn=document.getElementById('ab_'+p.id);
+    if(btn){btn.textContent=cart.has(p.id)?'✓ נוסף':'+ הוסף לעגלה';btn.className='add-btn'+(cart.has(p.id)?' added':'');}
+  });
+  const fd=document.getElementById('finalDisc');
+  if(fd)fd.textContent=disc+'%';
+  const footDisc=document.getElementById('footerDisc');
+  if(footDisc)footDisc.textContent=disc+'%';
+}
+
 function toggleCart(pid,disc){
   const btn=document.getElementById('ab_'+pid);
   if(cart.has(pid)){
