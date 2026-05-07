@@ -1079,20 +1079,14 @@ function renderProds(disc){
   const recIds=answered.filter(a=>a.correct).map(a=>a.product);
   const list=document.getElementById('prodList');
   list.innerHTML='';
-
-  // מיון: מומלצים קודם
-  const sorted=[...PRODS].sort((a,b)=>{
-    const ar=recIds.includes(a.id)?0:1;
-    const br=recIds.includes(b.id)?0:1;
-    return ar-br;
-  });
-
-  sorted.forEach(p=>{
+  const sorted=[...PRODS].sort((a,b)=>(recIds.includes(a.id)?0:1)-(recIds.includes(b.id)?0:1));
+  sorted.forEach(function(p){
     const isRec=recIds.includes(p.id);
     const td=Math.min(disc+cartBonus,14);
     const final=Math.round(p.price*(1-td/100));
     const saving=p.price-final;
-    const img=imgSrc[p.id]?'<img src="'+imgSrc[p.id]+'" alt="'+p.name+'">'
+    const img=imgSrc[p.id]
+      ?'<img src="'+imgSrc[p.id]+'" alt="'+p.name+'" style="width:100%;height:100%;object-fit:cover">'
       :'<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:36px">🏺</div>';
     const card=document.createElement('div');
     card.className='prod-card'+(isRec?' rec':'');
@@ -1102,15 +1096,22 @@ function renderProds(disc){
         '<div class="prod-name">'+p.name+'</div>'+
         '<div class="prod-desc">'+p.desc+'</div>'+
         '<div class="prod-price-row">'+
-          '<span class="prod-new">₪'+final+'</span>'+
-          (td>0?'<span class="prod-old">₪'+p.price+'</span><span class="prod-save">-'+td+'%</span>':'')+'</div>'+
-        (saving>0?'<div style="font-size:10px;color:var(--green);font-weight:700;margin-bottom:6px">חיסכון ₪'+saving+'</div>':'')+
-        '<button class="add-btn" id="ab_'+p.id+'">+ הוסף לעגלה</button>'+
+          '<span id="pnew_'+p.id+'" class="prod-new">₪'+final+'</span>'+
+          (td>0?'<span class="prod-old">₪'+p.price+'</span><span id="psave_'+p.id+'" class="prod-save">-'+td+'%</span>':'')+
+        '</div>'+
+        (saving>0?'<div id="psaving_'+p.id+'" style="font-size:10px;color:var(--green);font-weight:700;margin-bottom:6px">חיסכון ₪'+saving+'</div>':'')+
+        '<div style="display:flex;gap:6px;margin-top:4px">'+
+          '<button class="add-btn" id="ab_'+p.id+'" style="flex:1">+ הוסף לעגלה</button>'+
+          '<a href="'+p.url+'" target="_blank" rel="noopener" style="flex-shrink:0;padding:7px 10px;background:rgba(193,113,74,.1);color:var(--clay);border-radius:var(--rs);font-size:11px;font-weight:700;text-decoration:none;display:flex;align-items:center;white-space:nowrap;border:1px solid rgba(193,113,74,.2)">לפרטים ↗</a>'+
+        '</div>'+
       '</div>';
     list.appendChild(card);
-    document.getElementById('ab_'+p.id).onclick=function(){toggleCart(p.id,disc);};
+    (function(pid){
+      document.getElementById('ab_'+pid).onclick=function(){toggleCart(pid,disc);};
+    })(p.id);
   });
 }
+
 
 function toggleCart(pid,disc){
   const btn=document.getElementById('ab_'+pid);
