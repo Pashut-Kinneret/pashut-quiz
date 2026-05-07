@@ -1386,71 +1386,68 @@ function buildSummary(){
   const items=PRODS.filter(p=>cart.has(p.id));
   let fullTotal=0, discTotal=0;
 
-  const grEl=document.getElementById('sum-greeting');if(grEl)grEl.textContent='הנה סיכום הזמנתך';
-
+  // ── מוצרים
   let rows='';
   items.forEach(p=>{
-    const orig=p.price;
-    const final=Math.round(orig*(1-disc/100));
-    const saving=orig-final;
-    fullTotal+=orig; discTotal+=final;
-    const img=imgSrc[p.id]?'<img src="'+imgSrc[p.id]+'" style="width:52px;height:52px;object-fit:cover;border-radius:8px;flex-shrink:0">'
-      :'<div style="width:52px;height:52px;border-radius:8px;background:#F4EDE3;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">🏺</div>';
-    rows+=`<div style="display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid rgba(139,74,46,.08)">
-      ${img}
-      <div style="flex:1">
-        <div style="font-size:13px;font-weight:700;color:var(--brown)">${p.name}</div>
-        <div style="display:flex;align-items:baseline;gap:6px;margin-top:3px">
-          <span style="font-size:16px;font-weight:900;color:var(--green)">₪${final}</span>
-          <span style="font-size:11px;color:var(--brown-s);text-decoration:line-through">₪${orig}</span>
-          <span style="font-size:10px;font-weight:700;color:var(--clay);background:rgba(193,113,74,.1);border-radius:5px;padding:1px 5px">-${disc}%</span>
-        </div>
-        <div style="font-size:10px;color:var(--green);font-weight:700;margin-top:1px">חיסכון ₪${saving}</div>
-      </div>
-    </div>`;
+    const final=Math.round(p.price*(1-disc/100));
+    const saving=p.price-final;
+    fullTotal+=p.price; discTotal+=final;
+    const img=imgSrc[p.id]
+      ?'<img src="'+imgSrc[p.id]+'" style="width:56px;height:56px;object-fit:cover;border-radius:10px;flex-shrink:0">'
+      :'<div style="width:56px;height:56px;border-radius:10px;background:#F4EDE3;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">🏺</div>';
+    rows+=''
+      +'<div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(139,74,46,.08)">'
+      +img
+      +'<div style="flex:1">'
+        +'<div style="font-size:14px;font-weight:700;color:var(--brown)">'+p.name+'</div>'
+        +'<div style="display:flex;align-items:center;gap:8px;margin-top:4px">'
+          +'<span style="font-size:17px;font-weight:900;color:var(--green)">₪'+final+'</span>'
+          +'<span style="font-size:12px;color:var(--brown-s);text-decoration:line-through">₪'+p.price+'</span>'
+          +'<span style="font-size:11px;font-weight:700;color:#fff;background:var(--clay);border-radius:6px;padding:2px 7px">-'+disc+'%</span>'
+        +'</div>'
+        +'<div style="font-size:11px;color:var(--green);font-weight:700;margin-top:2px">✓ חסכת ₪'+saving+'</div>'
+      +'</div>'
+      +'</div>';
   });
 
   const totalSaving=fullTotal-discTotal;
   const ship=freeShip?0:SHIP;
   const grand=discTotal+ship;
 
-  const body=document.getElementById('summaryBody');
-  body.innerHTML=`
-    <!-- מוצרים -->
-    <div style="background:#fff;border-radius:var(--r);padding:16px;margin-bottom:12px;box-shadow:0 2px 12px rgba(92,61,30,.07);border:1px solid rgba(139,74,46,.08)">
-      <div style="font-size:12px;font-weight:700;color:var(--brown-m);margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em">📦 המוצרים שבחרת</div>
-      ${rows}
-    </div>
-    <!-- סיכום מחירים -->
-    <div style="background:#fff;border-radius:var(--r);padding:16px;margin-bottom:12px;box-shadow:0 2px 12px rgba(92,61,30,.07);border:1px solid rgba(139,74,46,.08)">
-      <div style="font-size:12px;font-weight:700;color:var(--brown-m);margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em">💰 פירוט מחירים</div>
-      <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(139,74,46,.07);font-size:13px">
-        <span style="color:var(--brown-s)">מחיר מלא</span>
-        <span style="color:var(--brown-s);text-decoration:line-through">₪${fullTotal}</span>
-      </div>
-      <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(139,74,46,.07);font-size:13px">
-        <span style="color:var(--green);font-weight:700">✅ חיסכון (${disc}% הנחה)</span>
-        <span style="color:var(--green);font-weight:800">-₪${totalSaving}</span>
-      </div>
-      <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(139,74,46,.07);font-size:13px">
-        <span style="color:var(--brown-s)">🚚 משלוח עד הבית</span>
-        <span style="${freeShip?'color:var(--green);font-weight:700':'color:var(--brown-s)'}">${freeShip?'חינם ✅':'₪'+SHIP}</span>
-      </div>
-      <div style="display:flex;justify-content:space-between;padding:10px 0 0;font-size:16px">
-        <span style="font-family:Heebo,sans-serif;font-weight:900;color:var(--brown)">סה״כ לתשלום</span>
-        <span style="font-family:Heebo,sans-serif;font-weight:900;color:var(--clay);font-size:20px">₪${grand}</span>
-      </div>
-    </div>
-    <!-- פרטי המזמין -->
-    <div style="background:#fff;border-radius:var(--r);padding:14px;box-shadow:0 2px 12px rgba(92,61,30,.07);border:1px solid rgba(139,74,46,.08)">
-      <div style="font-size:12px;font-weight:700;color:var(--brown-m);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em">👤 פרטי המזמין</div>
-      <div style="font-size:13px;color:var(--brown);line-height:1.9">
-        ${userData.name}<br/>
-        📞 ${userData.phone}<br/>
-        ${userData.email?'📧 '+userData.email+'<br/>':''}
-        ${userData.city?'📍 '+userData.city:''}
-      </div>
-    </div>`;
+  const sb=document.getElementById('summaryBody');
+  if(!sb)return;
+  sb.innerHTML=''
+
+  // כרטיס מוצרים
+  +'<div style="background:#fff;border-radius:var(--r);padding:16px;margin-bottom:12px;box-shadow:0 2px 16px rgba(92,61,30,.08);border:1px solid rgba(139,74,46,.08)">'
+    +'<div style="font-size:12px;font-weight:800;color:var(--brown-m);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em">📦 המוצרים שבחרת</div>'
+    +rows
+  +'</div>'
+
+  // כרטיס סיכום מחירים
+  +'<div style="background:#fff;border-radius:var(--r);padding:16px;margin-bottom:12px;box-shadow:0 2px 16px rgba(92,61,30,.08);border:1px solid rgba(139,74,46,.08)">'
+    +'<div style="font-size:12px;font-weight:800;color:var(--brown-m);margin-bottom:12px;text-transform:uppercase;letter-spacing:.06em">💰 סיכום תשלום</div>'
+
+    +'<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(139,74,46,.06);font-size:13px">'
+      +'<span style="color:var(--brown-s)">מחיר לפני הנחה</span>'
+      +'<span style="color:var(--brown-s);text-decoration:line-through">₪'+fullTotal+'</span>'
+    +'</div>'
+
+    +'<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(139,74,46,.06);font-size:13px">'
+      +'<span style="color:var(--green);font-weight:700">✅ הנחת חידון ('+disc+'%)</span>'
+      +'<span style="color:var(--green);font-weight:800">-₪'+totalSaving+'</span>'
+    +'</div>'
+
+    +'<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(139,74,46,.06);font-size:13px">'
+      +'<span style="color:var(--brown-s)">🚚 משלוח עד הבית</span>'
+      +'<span style="'+(freeShip?'color:var(--green);font-weight:700':'color:var(--brown-s)')+'">'+(freeShip?'חינם 🎉':'₪'+SHIP)+'</span>'
+    +'</div>'
+
+    +'<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0 4px;border-top:2px solid rgba(139,74,46,.12);margin-top:4px">'
+      +'<span style="font-family:Heebo,sans-serif;font-weight:900;color:var(--brown);font-size:16px">סה״כ לתשלום</span>'
+      +'<span style="font-family:Heebo,sans-serif;font-weight:900;color:var(--clay);font-size:22px">₪'+grand+'</span>'
+    +'</div>'
+  +'</div>';
 }
 
 </script>
@@ -1526,11 +1523,12 @@ function buildSummary(){
       <div style="background:#fff;border-radius:var(--r);padding:16px;box-shadow:0 2px 12px rgba(92,61,30,.07);border:1px solid rgba(139,74,46,.08)">
         <div style="font-size:11px;font-weight:800;color:var(--brown-m);margin-bottom:12px;text-transform:uppercase;letter-spacing:.06em">👤 פרטי המזמין</div>
         <div style="display:flex;flex-direction:column;gap:9px">
-          <input class="det-inp" id="d-fname" placeholder="שם פרטי *" type="text"/>
-          <input class="det-inp" id="d-lname" placeholder="שם משפחה *" type="text"/>
-          <input class="det-inp" id="d-phone" placeholder="טלפון *" type="tel" inputmode="tel"/>
-          <input class="det-inp" id="d-email" placeholder="אימייל *" type="email"/>
-          <input class="det-inp" id="d-address" placeholder="כתובת מלאה (רחוב, מספר, עיר) *" type="text"/>
+          <input class="det-inp" id="d-fname" placeholder="שם פרטי *" type="text" autocomplete="given-name"/>
+          <input class="det-inp" id="d-lname" placeholder="שם משפחה *" type="text" autocomplete="family-name"/>
+          <input class="det-inp" id="d-phone" placeholder="טלפון *" type="tel" inputmode="tel" autocomplete="tel"/>
+          <input class="det-inp" id="d-email" placeholder="אימייל *" type="email" autocomplete="email"/>
+          <input class="det-inp" id="d-street" placeholder="רחוב ומספר בית *" type="text" autocomplete="address-line1"/>
+          <input class="det-inp" id="d-city" placeholder="עיר *" type="text" autocomplete="address-level2"/>
           <textarea class="det-inp" id="d-notes" placeholder="הערות לצוות החנות (אופציונלי)" rows="2" style="resize:none"></textarea>
         </div>
       </div>
