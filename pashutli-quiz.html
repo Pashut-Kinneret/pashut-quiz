@@ -1196,7 +1196,50 @@ function showUpsell(count,td,disc){
   const hasMore=cart.size<5&&nextTd>td;
   const ov=document.createElement('div');
   ov.id='upsellOv';
-  ov.style.cssText='position:fixed;inset:0;z-index:800;display:flex;align-items:flex-end;justify-content:center;background:rgba(10,6,3,.7);backdrop-filter:blur(8px);opacity:0;transition:opacity .25s;padding:20px';
+  ov.style.cssText='position:fixed;inset:0;z-index:800;display:flex;align-items:flex-end;justify-content:center;background:rgba(10,6,3,.75);backdrop-filter:blur(10px);opacity:0;transition:opacity .25s;padding:0';
+
+  ov.innerHTML='<div id="upsellBox" style="background:#FBF6EF;border-radius:28px 28px 0 0;padding:28px 22px 36px;width:100%;max-width:440px;text-align:center;transform:translateY(100%);transition:transform .4s cubic-bezier(.34,1.56,.64,1)">'
+
+  // ── שורה עליונה: ההנחה הנוכחית — קטנה, משנית
+  +'<div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:20px">'
+    +'<span style="font-size:13px;color:var(--brown-s)">ההנחה שלך:</span>'
+    +'<span style="font-size:15px;font-weight:800;color:var(--clay);background:rgba(193,113,74,.1);border-radius:20px;padding:3px 12px">'+td+'%</span>'
+  +'</div>'
+
+  // ── מסר ראשי: הוסף מוצר
+  +(hasMore
+    ?'<div style="font-family:Heebo,sans-serif;font-size:26px;font-weight:900;color:var(--brown);line-height:1.25;margin-bottom:8px">הוסף עוד מוצר<br/>וקבל '+nextTd+'% הנחה!</div>'
+    +'<div style="font-size:14px;color:var(--brown-s);margin-bottom:20px">כל מוצר נוסף = עוד 1% הנחה</div>'
+    // ── חץ גדול בולט
+    +'<div style="background:linear-gradient(135deg,var(--clay),var(--clay-d));border-radius:var(--r);padding:18px 24px;margin-bottom:16px;box-shadow:0 8px 28px rgba(193,113,74,.35)">'
+      +'<div style="font-family:Heebo,sans-serif;font-size:40px;font-weight:900;color:#fff;line-height:1">+1%</div>'
+      +'<div style="font-size:14px;color:rgba(255,255,255,.8);margin-top:2px">על כל המוצרים שתרכוש</div>'
+    +'</div>'
+    :'<div style="font-family:Heebo,sans-serif;font-size:24px;font-weight:900;color:var(--brown);margin-bottom:8px">הגעת למקסימום! 🏆</div>'
+    +'<div style="font-size:14px;color:var(--brown-s);margin-bottom:20px">הנחה של '+td+'% — הכי גדולה שיש</div>'
+    +'<div style="background:linear-gradient(135deg,var(--clay),var(--clay-d));border-radius:var(--r);padding:18px 24px;margin-bottom:16px;box-shadow:0 8px 28px rgba(193,113,74,.35)">'
+      +'<div style="font-family:Heebo,sans-serif;font-size:40px;font-weight:900;color:#fff">'+td+'%</div>'
+      +'<div style="font-size:14px;color:rgba(255,255,255,.8);margin-top:2px">הנחה מקסימלית!</div>'
+    +'</div>'
+  )
+
+  // ── כפתורים
+  +(hasMore
+    ?'<button onclick="document.getElementById(\'upsellOv\').style.opacity=\'0\';setTimeout(()=>document.getElementById(\'upsellOv\').remove(),260)" style="width:100%;padding:16px;background:linear-gradient(135deg,var(--clay),var(--clay-d));color:#fff;border:none;border-radius:16px;font-family:Heebo,sans-serif;font-size:17px;font-weight:800;cursor:pointer;box-shadow:0 6px 20px rgba(193,113,74,.35);margin-bottom:10px">הוסף עוד מוצר →</button>'
+    +'<button onclick="goSummary()" style="width:100%;padding:14px;background:transparent;border:1.5px solid rgba(193,113,74,.3);color:var(--clay);border-radius:14px;font-family:Heebo,sans-serif;font-size:15px;font-weight:700;cursor:pointer">סיים ועבור לסיכום הזמנה</button>'
+    :'<button onclick="goSummary()" style="width:100%;padding:16px;background:linear-gradient(135deg,var(--clay),var(--clay-d));color:#fff;border:none;border-radius:16px;font-family:Heebo,sans-serif;font-size:17px;font-weight:800;cursor:pointer;box-shadow:0 6px 20px rgba(193,113,74,.35)">לסיכום ההזמנה →</button>'
+  )
+
+  +'</div>';
+
+  document.body.appendChild(ov);
+  snd('pop');flyCoins(1);
+  requestAnimationFrame(()=>{
+    ov.style.opacity='1';
+    document.getElementById('upsellBox').style.transform='translateY(0)';
+  });
+  ov.addEventListener('click',e=>{if(e.target===ov){ov.style.opacity='0';setTimeout(()=>ov.remove(),260);}});
+}
   ov.innerHTML=`
     <div id="upsellBox" style="background:#FBF6EF;border-radius:24px 24px 20px 20px;padding:28px 24px 32px;width:100%;max-width:420px;text-align:center;transform:translateY(60px);transition:transform .4s cubic-bezier(.34,1.56,.64,1)">
       <div style="font-size:3rem;margin-bottom:8px">${count===1?'🎉':'🛒'}</div>
@@ -1227,7 +1270,6 @@ function showUpsell(count,td,disc){
     document.getElementById('upsellBox').style.transform='translateY(0)';
   });
   ov.addEventListener('click',e=>{if(e.target===ov)closeUpsell();});
-}
 function closeUpsell(){
   const ov=document.getElementById('upsellOv');
   if(!ov)return;
@@ -1295,8 +1337,34 @@ function openSharePopup(){
         setTimeout(()=>{
           closeSharePopup();
           freeShip=true;
-          toast('🎉 משלוח חינם! ההנחה הוחלה','ok',3000);
           burst();
+
+          // פופ-אפ מרשים
+          const fp=document.createElement('div');
+          fp.style.cssText='position:fixed;inset:0;z-index:999;display:flex;align-items:center;justify-content:center;background:rgba(10,6,3,.8);backdrop-filter:blur(16px)';
+          fp.innerHTML='<div style="background:#FBF6EF;border-radius:28px;padding:40px 32px;max-width:340px;width:90%;text-align:center;animation:popBounce .5s cubic-bezier(.34,1.56,.64,1)">'
+            +'<div style="font-size:4.5rem;margin-bottom:8px">🚚</div>'
+            +'<div style="font-family:Heebo,sans-serif;font-size:30px;font-weight:900;color:var(--brown);margin-bottom:6px">משלוח חינם!</div>'
+            +'<div style="background:linear-gradient(135deg,var(--clay),var(--clay-d));border-radius:16px;padding:14px 24px;margin:16px 0;box-shadow:0 8px 28px rgba(193,113,74,.35)">'
+              +'<div style="font-size:14px;color:rgba(255,255,255,.75);margin-bottom:4px">חסכת ₪35 על המשלוח 🎉</div>'
+              +'<div style="font-family:Heebo,sans-serif;font-size:18px;font-weight:900;color:#fff">המשלוח מחושב בסיכום ההזמנה</div>'
+            +'</div>'
+            +'</div>';
+          document.body.appendChild(fp);
+
+          // עדכן סיכום בסיסי אם נמצאים במסך סיכום
+          setTimeout(()=>{
+            fp.style.transition='opacity .35s';
+            fp.style.opacity='0';
+            setTimeout(()=>{
+              fp.remove();
+              // עדכן buildSummary עם משלוח חינם
+              if(cart.size>0) buildSummary();
+              // הצג toast
+              toast('✅ משלוח חינם הוחל על הזמנתך!','ok',3000);
+            },350);
+          },2200);
+
           const storeMsg='🚚 לקוח זכה במשלוח חינם!\nשלח חידון ל-3 חברים ✅';
           setTimeout(()=>window.open('https://wa.me/'+WA+'?text='+encodeURIComponent(storeMsg),'_blank'),800);
         },800);
